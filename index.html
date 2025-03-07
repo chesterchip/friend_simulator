@@ -28,6 +28,18 @@
 <body>
     <div class="sidebar">
         <h2>Emotion Input <span class="version">v1.008</span></h2>
+        
+        <!-- Configurations Panel (Moved to top) -->
+        <h3>Configurations</h3>
+        <div class="config-controls">
+            <div class="config-buttons">
+                <button id="save-config-btn" class="config-button">Save Configuration</button>
+                <button id="load-config-btn" class="config-button">Load Configuration</button>
+            </div>
+            <div id="config-feedback" class="config-feedback"></div>
+            <input type="file" id="config-file-input" accept=".json" style="display: none;">
+        </div>
+        
         <div class="emotion-input-container">
             <textarea id="emotion-input" class="emotion-input" placeholder="Enter your emotions here..." rows="5"></textarea>
             <button class="clear-button" id="clear-btn">×</button>
@@ -45,49 +57,63 @@
         </div>
         
         <h3>Background Controls</h3>
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Animation Speed</span>
-                <span class="slider-value" id="animation-speed-value">50</span>
+        <div class="background-controls-grid">
+            <!-- Left Column -->
+            <div class="background-controls-column">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Animation Speed</span>
+                        <span class="slider-value" id="animation-speed-value">50</span>
+                    </div>
+                    <input type="range" id="animation-speed" class="slider" min="0" max="100" value="50">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Gradient Size</span>
+                        <span class="slider-value" id="gradient-max-size-value">50</span>
+                    </div>
+                    <input type="range" id="gradient-max-size" class="slider" min="0" max="100" value="50">
+                </div>
             </div>
-            <input type="range" id="animation-speed" class="slider" min="0" max="100" value="50">
+            
+            <!-- Right Column -->
+            <div class="background-controls-column">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Gradient Inner Size</span>
+                        <span class="slider-value" id="gradient-min-size-value">0</span>
+                    </div>
+                    <input type="range" id="gradient-min-size" class="slider" min="0" max="100" value="0">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Gradient Feather Size</span>
+                        <span class="slider-value" id="gradient-feather-size-value">0</span>
+                    </div>
+                    <input type="range" id="gradient-feather-size" class="slider" min="0" max="100" value="0">
+                </div>
+            </div>
         </div>
         
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Gradient Size</span>
-                <span class="slider-value" id="gradient-max-size-value">50</span>
-            </div>
-            <input type="range" id="gradient-max-size" class="slider" min="0" max="100" value="50">
-            <div class="slider-description">Controls gradient size (50px to 1000px)</div>
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Gradient Inner Size</span>
-                <span class="slider-value" id="gradient-min-size-value">0</span>
-            </div>
-            <input type="range" id="gradient-min-size" class="slider" min="0" max="100" value="0">
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Gradient Feather Size</span>
-                <span class="slider-value" id="gradient-feather-size-value">0</span>
-            </div>
-            <input type="range" id="gradient-feather-size" class="slider" min="0" max="100" value="0">
-        </div>
-        
-        <!-- Layers Panel -->
+        <!-- Updated Layers Panel with Visibility Toggle and Horizontal Layout -->
         <h3>Layers</h3>
         <div class="layer-controls">
             <!-- Text Layer -->
             <div class="layer-item">
                 <div class="layer-header">
-                    <span class="layer-name">Text</span>
+                    <div class="layer-title">
+                        <button class="visibility-toggle" id="text-visibility-toggle" title="Toggle visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <span class="layer-name">Text</span>
+                    </div>
                     <span class="layer-opacity-value" id="text-opacity-value">100%</span>
                 </div>
-                <div class="layer-options">
+                <div class="layer-options horizontal">
                     <div class="layer-slider">
                         <input type="range" id="text-opacity" class="slider" min="0" max="100" value="100">
                     </div>
@@ -115,10 +141,17 @@
             <!-- Gradient Layer -->
             <div class="layer-item">
                 <div class="layer-header">
-                    <span class="layer-name">Gradient</span>
+                    <div class="layer-title">
+                        <button class="visibility-toggle" id="gradient-visibility-toggle" title="Toggle visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <span class="layer-name">Gradient</span>
+                    </div>
                     <span class="layer-opacity-value" id="gradient-opacity-value">100%</span>
                 </div>
-                <div class="layer-options">
+                <div class="layer-options horizontal">
                     <div class="layer-slider">
                         <input type="range" id="gradient-opacity" class="slider" min="0" max="100" value="100">
                     </div>
@@ -146,10 +179,17 @@
             <!-- Background Layer -->
             <div class="layer-item">
                 <div class="layer-header">
-                    <span class="layer-name">Background</span>
+                    <div class="layer-title">
+                        <button class="visibility-toggle" id="background-visibility-toggle" title="Toggle visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <span class="layer-name">Background</span>
+                    </div>
                     <span class="layer-opacity-value" id="background-opacity-value">100%</span>
                 </div>
-                <div class="layer-options">
+                <div class="layer-options horizontal">
                     <div class="layer-slider">
                         <input type="range" id="background-opacity" class="slider" min="0" max="100" value="100">
                     </div>
@@ -201,48 +241,89 @@
             </tbody>
         </table>
         
+        <!-- Updated Text Controls in Two Columns with Font Style Dropdown -->
         <h3>Text Controls</h3>
-        <!-- Font Family Dropdown -->
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Font Family</span>
+        <div class="text-controls-grid">
+            <!-- Left Column -->
+            <div class="text-controls-column">
+                <!-- Font Family Dropdown with more fonts -->
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Font Family</span>
+                    </div>
+                    <select id="font-family" class="dropdown">
+                        <option value="SF Pro">SF Pro</option>
+                        <option value="SF Pro Rounded">SF Pro Rounded</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Poppins">Poppins</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Merriweather">Merriweather</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Garamond">Garamond</option>
+                        <option value="Baskerville">Baskerville</option>
+                        <option value="Proxima Nova">Proxima Nova</option>
+                        <option value="Futura">Futura</option>
+                        <option value="Gill Sans">Gill Sans</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Font Size</span>
+                        <span class="slider-value" id="font-size-value">50</span>
+                    </div>
+                    <input type="range" id="font-size" class="slider" min="0" max="100" value="50">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Font Kerning</span>
+                        <span class="slider-value" id="font-kerning-value">50</span>
+                    </div>
+                    <input type="range" id="font-kerning" class="slider" min="0" max="100" value="50">
+                </div>
             </div>
-            <select id="font-family" class="dropdown">
-                <option value="SF Pro">SF Pro</option>
-                <option value="SF Pro Rounded">SF Pro Rounded</option>
-            </select>
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Font Size</span>
-                <span class="slider-value" id="font-size-value">50</span>
+            
+            <!-- Right Column -->
+            <div class="text-controls-column">
+                <!-- Font Style Dropdown -->
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Font Style</span>
+                    </div>
+                    <select id="font-style" class="dropdown">
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="italic">Italic</option>
+                        <option value="underline">Underline</option>
+                        <option value="bold-italic">Bold Italic</option>
+                    </select>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Font Weight</span>
+                        <span class="slider-value" id="font-weight-value">50</span>
+                    </div>
+                    <input type="range" id="font-weight" class="slider" min="0" max="100" value="50">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Line Height</span>
+                        <span class="slider-value" id="line-height-value">50</span>
+                    </div>
+                    <input type="range" id="line-height" class="slider" min="0" max="100" value="50">
+                </div>
             </div>
-            <input type="range" id="font-size" class="slider" min="0" max="100" value="50">
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Font Kerning</span>
-                <span class="slider-value" id="font-kerning-value">50</span>
-            </div>
-            <input type="range" id="font-kerning" class="slider" min="0" max="100" value="50">
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Font Weight</span>
-                <span class="slider-value" id="font-weight-value">50</span>
-            </div>
-            <input type="range" id="font-weight" class="slider" min="0" max="100" value="50">
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Line Height</span>
-                <span class="slider-value" id="line-height-value">50</span>
-            </div>
-            <input type="range" id="line-height" class="slider" min="0" max="100" value="50">
         </div>
         
         <h3>Transition Controls</h3>
@@ -252,7 +333,6 @@
                 <span class="slider-value" id="transition-speed-value">50</span>
             </div>
             <input type="range" id="transition-speed" class="slider" min="0" max="50" value="50">
-            <div class="slider-description">Controls text typing speed</div>
         </div>
         
         <div class="slider-container">
@@ -261,7 +341,6 @@
                 <span class="slider-value" id="bg-transition-speed-value">500ms</span>
             </div>
             <input type="range" id="bg-transition-speed" class="slider" min="500" max="2000" step="50" value="500">
-            <div class="slider-description">Controls background color transition speed (ms)</div>
         </div>
     </div>
     
@@ -274,6 +353,7 @@
     <script src="js/emotion-analyzer.js"></script>
     <script src="js/visualization.js"></script>
     <script src="js/ui-controls.js"></script>
+    <script src="js/config-manager.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

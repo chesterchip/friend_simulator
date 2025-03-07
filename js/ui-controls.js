@@ -11,6 +11,12 @@ const detectedEmotionsContainer = document.getElementById('detected-emotions');
 const quickEmotionsContainer = document.getElementById('quick-emotions');
 const colorTableBody = document.getElementById('color-table-body');
 const fontFamilyDropdown = document.getElementById('font-family');
+const fontStyleDropdown = document.getElementById('font-style');
+
+// Layer visibility toggles
+const textVisibilityToggle = document.getElementById('text-visibility-toggle');
+const gradientVisibilityToggle = document.getElementById('gradient-visibility-toggle');
+const backgroundVisibilityToggle = document.getElementById('background-visibility-toggle');
 
 // Slider elements
 const animationSpeedSlider = document.getElementById('animation-speed');
@@ -57,6 +63,7 @@ function initUIControls() {
     initColorTable();
     initSliders();
     initEventListeners();
+    initLayerVisibilityToggles();
     updateEmotionBars(getCurrentEmotionState().emotionScores);
 }
 
@@ -70,6 +77,7 @@ function initQuickEmotions() {
         const button = document.createElement('button');
         button.className = 'emotion-btn';
         button.textContent = emotion;
+        // Removed tooltip with example text
         button.addEventListener('click', () => {
             emotionInput.value = examples[emotion];
             const result = analyzeEmotion(examples[emotion], true);
@@ -258,6 +266,37 @@ function updateAnimationControls(emotion) {
 }
 
 /**
+ * Initialize layer visibility toggles
+ */
+function initLayerVisibilityToggles() {
+    // Set up initial state (all visible)
+    window.updateLayerVisibility('text', true);
+    window.updateLayerVisibility('gradient', true);
+    window.updateLayerVisibility('background', true);
+    
+    // Text layer visibility toggle
+    textVisibilityToggle.addEventListener('click', () => {
+        const isVisible = !textVisibilityToggle.classList.contains('hidden');
+        textVisibilityToggle.classList.toggle('hidden');
+        window.updateLayerVisibility('text', !isVisible);
+    });
+    
+    // Gradient layer visibility toggle
+    gradientVisibilityToggle.addEventListener('click', () => {
+        const isVisible = !gradientVisibilityToggle.classList.contains('hidden');
+        gradientVisibilityToggle.classList.toggle('hidden');
+        window.updateLayerVisibility('gradient', !isVisible);
+    });
+    
+    // Background layer visibility toggle
+    backgroundVisibilityToggle.addEventListener('click', () => {
+        const isVisible = !backgroundVisibilityToggle.classList.contains('hidden');
+        backgroundVisibilityToggle.classList.toggle('hidden');
+        window.updateLayerVisibility('background', !isVisible);
+    });
+}
+
+/**
  * Handle color box click to show color picker
  * @param {Event} e - Click event
  */
@@ -359,6 +398,12 @@ function initSliders() {
     fontFamilyDropdown.addEventListener('change', function() {
         const value = this.value;
         window.updateSliderValue('fontFamily', value);
+    });
+    
+    // Font Style
+    fontStyleDropdown.addEventListener('change', function() {
+        const value = this.value;
+        window.updateSliderValue('fontStyle', value);
     });
     
     // Layer Controls

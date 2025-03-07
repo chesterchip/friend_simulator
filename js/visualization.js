@@ -33,6 +33,7 @@ let fontSize = defaultValues.fontSize;
 let fontKerning = defaultValues.fontKerning;
 let lineHeight = defaultValues.lineHeight;
 let fontWeight = defaultValues.fontWeight;
+let fontStyle = defaultValues.fontStyle; // Font style (normal, bold, italic, etc.)
 let transitionSpeed = defaultValues.transitionSpeed;
 let backgroundTransitionSpeed = defaultValues.backgroundTransitionSpeed;
 let fontFamily = defaultValues.fontFamily;
@@ -44,6 +45,11 @@ let gradientOpacity = defaultValues.gradientOpacity;
 let gradientBlendMode = defaultValues.gradientBlendMode;
 let backgroundOpacity = defaultValues.backgroundOpacity;
 let backgroundBlendMode = defaultValues.backgroundBlendMode;
+
+// Layer visibility settings
+let textLayerVisible = true;
+let gradientLayerVisible = true;
+let backgroundLayerVisible = true;
 
 // DOM elements
 const displayCanvas = document.getElementById('display-canvas');
@@ -102,48 +108,59 @@ function updateDisplay() {
     // Create a darker version of the secondary color for the background
     const darkerSecondary = shadeColor(secondaryColor, -30); // 30% darker
     
-    // Apply background layer with opacity and blend mode
-    ctx.globalCompositeOperation = "source-over"; // Reset to default
-    ctx.globalAlpha = backgroundOpacity / 100;
-    ctx.fillStyle = darkerSecondary;
-    ctx.fillRect(0, 0, width, height);
+    // Apply background layer with opacity and blend mode (if visible)
+    if (backgroundLayerVisible) {
+        ctx.globalCompositeOperation = "source-over"; // Reset to default
+        ctx.globalAlpha = backgroundOpacity / 100;
+        ctx.fillStyle = darkerSecondary;
+        ctx.fillRect(0, 0, width, height);
+    }
     
-    // Set blend mode for gradient layer
-    ctx.globalCompositeOperation = gradientBlendMode;
-    
-    // Calculate gradient position based on animation
-    const gradientCenterX = width/2 + Math.sin(animationOffset) * (width/4);
-    const gradientCenterY = height/2 + Math.cos(animationOffset) * (height/4);
-    
-    // Apply gradient layer with opacity
-    ctx.globalAlpha = gradientOpacity / 100;
-    
-    // Create smaller gradient overlay
-    const minGradientSize = 50;
-    const maxGradientSize = 1000;
-    const gradientSizeRange = maxGradientSize - minGradientSize;
-    const gradientSize = minGradientSize + (gradientSizeRange * (gradientMaxSize / 100));
-    
-    const gradient = ctx.createRadialGradient(
-        gradientCenterX, gradientCenterY, gradientMinSize * 2,
-        gradientCenterX, gradientCenterY, gradientSize
-    );
-    
-    gradient.addColorStop(0, primaryColor);
-    gradient.addColorStop(gradientFeatherSize / 100, primaryColor);
-    gradient.addColorStop(1, 'rgba(0,0,0,0)'); // Transparent at the edge
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    // Apply gradient layer (if visible)
+    if (gradientLayerVisible) {
+        // Set blend mode for gradient layer
+        ctx.globalCompositeOperation = gradientBlendMode;
+        
+        // Calculate gradient position based on animation
+        const gradientCenterX = width/2 + Math.sin(animationOffset) * (width/4);
+        const gradientCenterY = height/2 + Math.cos(animationOffset) * (height/4);
+        
+        // Apply gradient layer with opacity
+        ctx.globalAlpha = gradientOpacity / 100;
+        
+        // Create smaller gradient overlay
+        const minGradientSize = 50;
+        const maxGradientSize = 1000;
+        const gradientSizeRange = maxGradientSize - minGradientSize;
+        const gradientSize = minGradientSize + (gradientSizeRange * (gradientMaxSize / 100));
+        
+        const gradient = ctx.createRadialGradient(
+            gradientCenterX, gradientCenterY, gradientMinSize * 2,
+            gradientCenterX, gradientCenterY, gradientSize
+        );
+        
+        gradient.addColorStop(0, primaryColor);
+        gradient.addColorStop(gradientFeatherSize / 100, primaryColor);
+        gradient.addColorStop(1, 'rgba(0,0,0,0)'); // Transparent at the edge
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+    }
     
     // Reset opacity for future drawing operations
     ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = "source-over";
     
-    // Update text style with transitioning text color and opacity
-    displayText.style.color = textColor;
-    displayText.style.opacity = textOpacity / 100;
-    displayText.style.mixBlendMode = textBlendMode;
+    // Update text layer (visibility is handled by CSS)
+    if (textLayerVisible) {
+        // Update text style with transitioning text color and opacity
+        displayText.style.color = textColor;
+        displayText.style.opacity = textOpacity / 100;
+        displayText.style.mixBlendMode = textBlendMode;
+        displayText.style.visibility = 'visible';
+    } else {
+        displayText.style.visibility = 'hidden';
+    }
     
     // Apply slider values to visual elements
     updateTextStyles();
@@ -152,8 +169,8 @@ function updateDisplay() {
     updateTextAnimation();
     
     // Update animation offset for next frame
-    // Animation speed: lower values = faster animation
-    const animationFactor = 0.005 * ((100 - animationSpeed) / 50 + 0.5);
+    // Animation speed: lower values = faster animation (reversed)
+    const animationFactor = 0.005 * ((animationSpeed + 1) / 50 + 0.5);
     animationOffset += animationFactor;
     
     // Request next animation frame
@@ -173,21 +190,57 @@ function updateTextStyles() {
     // Letter spacing ranges from -2px to 10px
     displayText.style.letterSpacing = ((fontKerning - 50) / 10) + 'px';
     
-    // Font Weight ranges from 300 to 900
-    displayText.style.fontWeight = 300 + (fontWeight * 6);
-    
     // Line height ranges from 1 to 2
     displayText.style.lineHeight = (1 + (lineHeight / 100)).toString();
     
-    // Apply font family with proper fallbacks based on selection
+    // Apply font style (normal, bold, italic, underline, bold-italic)
+    switch(fontStyle) {
+        case 'normal':
+            displayText.style.fontWeight = 300 + (fontWeight * 6);
+            displayText.style.fontStyle = 'normal';
+            displayText.style.textDecoration = 'none';
+            break;
+        case 'bold':
+            displayText.style.fontWeight = 700;
+            displayText.style.fontStyle = 'normal';
+            displayText.style.textDecoration = 'none';
+            break;
+        case 'italic':
+            displayText.style.fontWeight = 300 + (fontWeight * 6);
+            displayText.style.fontStyle = 'italic';
+            displayText.style.textDecoration = 'none';
+            break;
+        case 'underline':
+            displayText.style.fontWeight = 300 + (fontWeight * 6);
+            displayText.style.fontStyle = 'normal';
+            displayText.style.textDecoration = 'underline';
+            break;
+        case 'bold-italic':
+            displayText.style.fontWeight = 700;
+            displayText.style.fontStyle = 'italic';
+            displayText.style.textDecoration = 'none';
+            break;
+        default:
+            // Default to normal
+            displayText.style.fontWeight = 300 + (fontWeight * 6);
+            displayText.style.fontStyle = 'normal';
+            displayText.style.textDecoration = 'none';
+    }
+    
+    // Apply font family based on selection
+    displayText.classList.remove('rounded-font');
+    displayText.classList.remove('standard-font');
+    
+    // Special handling for SF Pro and SF Pro Rounded
     if (fontFamily === "SF Pro Rounded") {
         displayText.style.fontFamily = '"SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", Arial, sans-serif';
         displayText.classList.add('rounded-font');
-        displayText.classList.remove('standard-font');
-    } else {
+    } else if (fontFamily === "SF Pro") {
         displayText.style.fontFamily = '"SF Pro", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
         displayText.classList.add('standard-font');
-        displayText.classList.remove('rounded-font');
+    } else {
+        // For all other fonts, just apply the font family directly
+        displayText.style.fontFamily = `"${fontFamily}", -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
     }
 }
 
@@ -202,7 +255,7 @@ function updateTextAnimation() {
     // Preserve font classes
     if (fontFamily === "SF Pro Rounded") {
         displayText.classList.add('rounded-font');
-    } else {
+    } else if (fontFamily === "SF Pro") {
         displayText.classList.add('standard-font');
     }
     
@@ -225,6 +278,29 @@ function updateTextAnimation() {
             displayText.style.animationFillMode = 'forwards';
         }
     }
+}
+
+/**
+ * Update layer visibility
+ * @param {string} layer - Layer name (text, gradient, background)
+ * @param {boolean} visible - Visibility state
+ */
+function updateLayerVisibility(layer, visible) {
+    switch(layer) {
+        case 'text':
+            textLayerVisible = visible;
+            displayText.style.visibility = visible ? 'visible' : 'hidden';
+            break;
+        case 'gradient':
+            gradientLayerVisible = visible;
+            break;
+        case 'background':
+            backgroundLayerVisible = visible;
+            break;
+    }
+    
+    // Update display
+    updateDisplay();
 }
 
 /**
@@ -352,6 +428,10 @@ function updateSliderValue(name, value) {
         case 'lineHeight':
             lineHeight = value;
             break;
+        case 'fontStyle':
+            fontStyle = value;
+            updateTextStyles();
+            break;
         case 'transitionSpeed':
             transitionSpeed = value;
             // If we're currently typing, adjust the typing speed
@@ -367,7 +447,6 @@ function updateSliderValue(name, value) {
             fontFamily = value;
             updateTextStyles(); // Immediately update font family
             break;
-        // Layer controls
         case 'textOpacity':
             textOpacity = value;
             break;
@@ -398,3 +477,4 @@ window.updateTextDisplay = updateTextDisplay;
 window.updateSliderValue = updateSliderValue;
 window.updateAnimationIntensity = updateAnimationIntensity;
 window.updateAnimationDuration = updateAnimationDuration;
+window.updateLayerVisibility = updateLayerVisibility;

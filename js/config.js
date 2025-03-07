@@ -7,13 +7,13 @@ const appVersion = "1.008";
 
 // Emotion configuration - colors and animations
 const emotions = {
-    anger: { bg: "#FF0000", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    happy: { bg: "#4CAF50", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    peaceful: { bg: "#FFEB3B", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    fear: { bg: "#FF9800", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    sad: { bg: "#9C27B0", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    surprise: { bg: "#2196F3", text: "#000000", animation: "none", intensity: 50, duration: 100 },
-    neutral: { bg: "#9E9E9E", text: "#000000", animation: "none", intensity: 50, duration: 100 }
+    anger: { bg: "#FF0000", text: "#acff45", animation: "none", intensity: 50, duration: 100 },
+    happy: { bg: "#4CAF50", text: "#fffc51", animation: "none", intensity: 50, duration: 100 },
+    peaceful: { bg: "#FFEB3B", text: "#2142ff", animation: "none", intensity: 50, duration: 100 },
+    fear: { bg: "#FF9800", text: "#00f56f", animation: "none", intensity: 50, duration: 100 },
+    sad: { bg: "#9C27B0", text: "#fffc4e", animation: "none", intensity: 50, duration: 100 },
+    surprise: { bg: "#2196F3", text: "#59ff88", animation: "none", intensity: 50, duration: 100 },
+    neutral: { bg: "#9E9E9E", text: "#00224b", animation: "none", intensity: 50, duration: 100 }
 };
 
 // Example sentences for quick emotions
@@ -41,18 +41,19 @@ const keywords = {
 // Default animation options
 const animationOptions = ['pulse', 'shake', 'big', 'small', 'nod', 'ripple', 'bloom', 'jitter', 'none'];
 
-// Default animation and slider values
+// Default animation and slider values - updated with user configuration
 const defaultValues = {
-    animationSpeed: 50,
-    gradientMaxSize: 50,
-    gradientMinSize: 0,
-    gradientFeatherSize: 0,
-    fontSize: 50,
+    animationSpeed: 76,
+    gradientMaxSize: 100,
+    gradientMinSize: 100,
+    gradientFeatherSize: 28,
+    fontSize: 74,
     fontKerning: 50,
-    lineHeight: 50,
-    fontWeight: 50,
-    transitionSpeed: 50,
-    backgroundTransitionSpeed: 500, // Default 500ms (fast)
+    lineHeight: 36,
+    fontWeight: 18,
+    fontStyle: "normal",
+    transitionSpeed: 41,
+    backgroundTransitionSpeed: 500,
     defaultTransitionDuration: 1000, // Default 1 second
     fontFamily: "SF Pro", // Default font family
     

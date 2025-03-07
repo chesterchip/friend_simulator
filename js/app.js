@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI controls first
     initUIControls();
     
+    // Initialize configuration manager
+    if (typeof window.initConfigManager === 'function') {
+        window.initConfigManager();
+    } else {
+        console.warn('Configuration manager not available');
+    }
+    
     // Start the visualization (using window.startVisualization which is exposed by visualization.js)
     window.startVisualization();
     
