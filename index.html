@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Visualization v1.008</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Override grid template to make sidebars wider */
+        body {
+            grid-template-columns: 410px 1fr 560px; /* Increased right panel by 150px */
+        }
+        
+        /* Font handling */
+        .rounded-font {
+            font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", Arial, sans-serif !important;
+            font-feature-settings: "kern" 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .standard-font {
+            font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif !important;
+            font-feature-settings: "kern" 1;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Emotion Input <span class="version">v1.008</span></h2>
+        <div class="emotion-input-container">
+            <textarea id="emotion-input" class="emotion-input" placeholder="Enter your emotions here..." rows="5"></textarea>
+            <button class="clear-button" id="clear-btn">×</button>
+        </div>
+        <button id="analyze-btn" class="analyze-button">Analyze</button>
+        
+        <h3>Quick Emotions</h3>
+        <div class="quick-emotions" id="quick-emotions">
+            <!-- Quick emotion buttons will be added here -->
+        </div>
+        
+        <h3>Detected Emotions</h3>
+        <div id="detected-emotions">
+            <!-- Emotion bars will go here -->
+        </div>
+        
+        <h3>Background Controls</h3>
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Animation Speed</span>
+                <span class="slider-value" id="animation-speed-value">50</span>
+            </div>
+            <input type="range" id="animation-speed" class="slider" min="0" max="100" value="50">
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Gradient Size</span>
+                <span class="slider-value" id="gradient-max-size-value">50</span>
+            </div>
+            <input type="range" id="gradient-max-size" class="slider" min="0" max="100" value="50">
+            <div class="slider-description">Controls gradient size (50px to 1000px)</div>
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Gradient Inner Size</span>
+                <span class="slider-value" id="gradient-min-size-value">0</span>
+            </div>
+            <input type="range" id="gradient-min-size" class="slider" min="0" max="100" value="0">
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Gradient Feather Size</span>
+                <span class="slider-value" id="gradient-feather-size-value">0</span>
+            </div>
+            <input type="range" id="gradient-feather-size" class="slider" min="0" max="100" value="0">
+        </div>
+        
+        <!-- Layers Panel -->
+        <h3>Layers</h3>
+        <div class="layer-controls">
+            <!-- Text Layer -->
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-name">Text</span>
+                    <span class="layer-opacity-value" id="text-opacity-value">100%</span>
+                </div>
+                <div class="layer-options">
+                    <div class="layer-slider">
+                        <input type="range" id="text-opacity" class="slider" min="0" max="100" value="100">
+                    </div>
+                    <select id="text-blend-mode" class="dropdown">
+                        <option value="normal">Normal</option>
+                        <option value="multiply">Multiply</option>
+                        <option value="screen">Screen</option>
+                        <option value="overlay">Overlay</option>
+                        <option value="darken">Darken</option>
+                        <option value="lighten">Lighten</option>
+                        <option value="color-dodge">Color Dodge</option>
+                        <option value="color-burn">Color Burn</option>
+                        <option value="hard-light">Hard Light</option>
+                        <option value="soft-light">Soft Light</option>
+                        <option value="difference">Difference</option>
+                        <option value="exclusion">Exclusion</option>
+                        <option value="hue">Hue</option>
+                        <option value="saturation">Saturation</option>
+                        <option value="color">Color</option>
+                        <option value="luminosity">Luminosity</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Gradient Layer -->
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-name">Gradient</span>
+                    <span class="layer-opacity-value" id="gradient-opacity-value">100%</span>
+                </div>
+                <div class="layer-options">
+                    <div class="layer-slider">
+                        <input type="range" id="gradient-opacity" class="slider" min="0" max="100" value="100">
+                    </div>
+                    <select id="gradient-blend-mode" class="dropdown">
+                        <option value="normal">Normal</option>
+                        <option value="multiply">Multiply</option>
+                        <option value="screen">Screen</option>
+                        <option value="overlay">Overlay</option>
+                        <option value="darken">Darken</option>
+                        <option value="lighten">Lighten</option>
+                        <option value="color-dodge">Color Dodge</option>
+                        <option value="color-burn">Color Burn</option>
+                        <option value="hard-light">Hard Light</option>
+                        <option value="soft-light">Soft Light</option>
+                        <option value="difference">Difference</option>
+                        <option value="exclusion">Exclusion</option>
+                        <option value="hue">Hue</option>
+                        <option value="saturation">Saturation</option>
+                        <option value="color">Color</option>
+                        <option value="luminosity">Luminosity</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Background Layer -->
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-name">Background</span>
+                    <span class="layer-opacity-value" id="background-opacity-value">100%</span>
+                </div>
+                <div class="layer-options">
+                    <div class="layer-slider">
+                        <input type="range" id="background-opacity" class="slider" min="0" max="100" value="100">
+                    </div>
+                    <select id="background-blend-mode" class="dropdown">
+                        <option value="normal">Normal</option>
+                        <option value="multiply">Multiply</option>
+                        <option value="screen">Screen</option>
+                        <option value="overlay">Overlay</option>
+                        <option value="darken">Darken</option>
+                        <option value="lighten">Lighten</option>
+                        <option value="color-dodge">Color Dodge</option>
+                        <option value="color-burn">Color Burn</option>
+                        <option value="hard-light">Hard Light</option>
+                        <option value="soft-light">Soft Light</option>
+                        <option value="difference">Difference</option>
+                        <option value="exclusion">Exclusion</option>
+                        <option value="hue">Hue</option>
+                        <option value="saturation">Saturation</option>
+                        <option value="color">Color</option>
+                        <option value="luminosity">Luminosity</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content-wrapper">
+        <div class="main-content" id="main-content">
+            <canvas id="display-canvas" width="440" height="956"></canvas>
+            <div id="display-text" class="display-text">Enter an emotion to visualize<span class="typing-cursor"></span></div>
+        </div>
+    </div>
+    
+    <div class="color-config">
+        <h2>Emotion Colors <a href="animation-demo.html" class="view-animations-link">View Animations</a></h2>
+        
+        <table class="color-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>BG</th>
+                    <th>Text</th>
+                    <th>Text Animation</th>
+                    <th>Animation Settings</th>
+                </tr>
+            </thead>
+            <tbody id="color-table-body">
+                <!-- Emotion color controls will be added here -->
+            </tbody>
+        </table>
+        
+        <h3>Text Controls</h3>
+        <!-- Font Family Dropdown -->
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Font Family</span>
+            </div>
+            <select id="font-family" class="dropdown">
+                <option value="SF Pro">SF Pro</option>
+                <option value="SF Pro Rounded">SF Pro Rounded</option>
+            </select>
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Font Size</span>
+                <span class="slider-value" id="font-size-value">50</span>
+            </div>
+            <input type="range" id="font-size" class="slider" min="0" max="100" value="50">
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Font Kerning</span>
+                <span class="slider-value" id="font-kerning-value">50</span>
+            </div>
+            <input type="range" id="font-kerning" class="slider" min="0" max="100" value="50">
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Font Weight</span>
+                <span class="slider-value" id="font-weight-value">50</span>
+            </div>
+            <input type="range" id="font-weight" class="slider" min="0" max="100" value="50">
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Line Height</span>
+                <span class="slider-value" id="line-height-value">50</span>
+            </div>
+            <input type="range" id="line-height" class="slider" min="0" max="100" value="50">
+        </div>
+        
+        <h3>Transition Controls</h3>
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Text Typing Speed</span>
+                <span class="slider-value" id="transition-speed-value">50</span>
+            </div>
+            <input type="range" id="transition-speed" class="slider" min="0" max="50" value="50">
+            <div class="slider-description">Controls text typing speed</div>
+        </div>
+        
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">Background Transition Speed</span>
+                <span class="slider-value" id="bg-transition-speed-value">500ms</span>
+            </div>
+            <input type="range" id="bg-transition-speed" class="slider" min="500" max="2000" step="50" value="500">
+            <div class="slider-description">Controls background color transition speed (ms)</div>
+        </div>
+    </div>
+    
+    <div id="color-picker-container"></div>
+
+    <!-- JavaScript Files -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/color-picker.js"></script>
+    <script src="js/emotion-analyzer.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/ui-controls.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

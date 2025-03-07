@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Animation Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: #232323;
+            color: #cccccc;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ddd;
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .demo-box {
+            background-color: #2a2a2a;
+            border-radius: 3px;
+            border: 1px solid #444;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-text {
+            font-size: 30px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            color: white;
+        }
+        
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            background-color: #4d90fe;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        button:hover {
+            background-color: #5a9bff;
+        }
+        
+        .demo-input {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .demo-input input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 2px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+        }
+        
+        /* Animation keyframes */
+        @keyframes pulse {
+            0% { transform: scale(1) translate(-50%, -50%); }
+            50% { transform: scale(1.05) translate(-50%, -50%); }
+            100% { transform: scale(1) translate(-50%, -50%); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-52%, -50%); }
+            20%, 40%, 60%, 80% { transform: translate(-48%, -50%); }
+        }
+
+        @keyframes big {
+            0% { transform: scale(1) translate(-50%, -50%); }
+            50% { transform: scale(1.3) translate(-50%, -50%); }
+            100% { transform: scale(1) translate(-50%, -50%); }
+        }
+
+        @keyframes small {
+            0% { transform: scale(1) translate(-50%, -50%); }
+            50% { transform: scale(0.8) translate(-50%, -50%); }
+            100% { transform: scale(1) translate(-50%, -50%); }
+        }
+
+        @keyframes nod {
+            0%, 100% { transform: rotate(0deg) translate(-50%, -50%); }
+            25% { transform: rotate(-5deg) translate(-50%, -50%); }
+            75% { transform: rotate(5deg) translate(-50%, -50%); }
+        }
+
+        @keyframes ripple {
+            0% { transform: translate(-50%, -50%); text-shadow: 0px 0px 0px rgba(255, 255, 255, 0); }
+            50% { transform: translate(-50%, -50%); text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8); }
+            100% { transform: translate(-50%, -50%); text-shadow: 0px 0px 0px rgba(255, 255, 255, 0); }
+        }
+
+        @keyframes bloom {
+            0% { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
+            40% { transform: scale(1.1) translate(-50%, -50%); opacity: 1; }
+            100% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+        }
+
+        @keyframes jitter {
+            0%, 100% { transform: translate(-50%, -50%); }
+            10% { transform: translate(-52%, -48%) rotate(-1deg); }
+            20% { transform: translate(-49%, -51%) rotate(1deg); }
+            30% { transform: translate(-51%, -49%) rotate(0deg); }
+            40% { transform: translate(-50%, -52%) rotate(1deg); }
+            50% { transform: translate(-48%, -50%) rotate(-1deg); }
+            60% { transform: translate(-51%, -51%) rotate(0deg); }
+            70% { transform: translate(-49%, -49%) rotate(-1deg); }
+            80% { transform: translate(-52%, -50%) rotate(1deg); }
+            90% { transform: translate(-50%, -48%) rotate(0deg); }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+
+        .big {
+            animation: big 2s infinite;
+        }
+
+        .small {
+            animation: small 2s infinite;
+        }
+
+        .nod {
+            animation: nod 2s infinite;
+        }
+
+        .ripple {
+            animation: ripple 2s infinite;
+        }
+
+        .bloom {
+            animation-name: bloom;
+            animation-duration: 2s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        .jitter {
+            animation: jitter 0.5s infinite;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        a {
+            color: #4d90fe;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text Animation Demo</h1>
+    
+    <div class="demo-input">
+        <input type="text" id="demo-text-input" placeholder="Enter text to display in animations..." value="Emotion">
+    </div>
+    
+    <div class="grid">
+        <div class="demo-box" data-animation="big">
+            <div class="demo-text big">Big</div>
+        </div>
+        <div class="demo-box" data-animation="small">
+            <div class="demo-text small">Small</div>
+        </div>
+        <div class="demo-box" data-animation="shake">
+            <div class="demo-text shake">Shake</div>
+        </div>
+        <div class="demo-box" data-animation="nod">
+            <div class="demo-text nod">Nod</div>
+        </div>
+        <div class="demo-box" data-animation="ripple">
+            <div class="demo-text ripple">Ripple</div>
+        </div>
+        <div class="demo-box" data-animation="bloom">
+            <div class="demo-text bloom">Bloom</div>
+        </div>
+        <div class="demo-box" data-animation="jitter">
+            <div class="demo-text jitter">Jitter</div>
+        </div>
+        <div class="demo-box" data-animation="pulse">
+            <div class="demo-text pulse">Pulse</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="reset-button">Reset Animations</button>
+        <button id="apply-button">Apply Custom Text</button>
+    </div>
+    
+    <div class="footer">
+        <p>Return to <a href="index.html">Emotion Visualization App</a></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const demoBoxes = document.querySelectorAll('.demo-box');
+            const resetButton = document.getElementById('reset-button');
+            const applyButton = document.getElementById('apply-button');
+            const textInput = document.getElementById('demo-text-input');
+            
+            // Apply custom text
+            function applyCustomText() {
+                const customText = textInput.value.trim() || 'Emotion';
+                document.querySelectorAll('.demo-text').forEach(textElement => {
+                    const animationType = textElement.parentElement.dataset.animation;
+                    textElement.textContent = customText;
+                });
+            }
+            
+            // Reset animations
+            function resetAnimations() {
+                document.querySelectorAll('.demo-text').forEach(textElement => {
+                    const animationType = textElement.parentElement.dataset.animation;
+                    textElement.className = 'demo-text';
+                    // Force reflow
+                    void textElement.offsetWidth;
+                    textElement.className = `demo-text ${animationType}`;
+                });
+            }
+            
+            // Click handlers
+            demoBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    const animation = box.dataset.animation;
+                    const textElement = box.querySelector('.demo-text');
+                    
+                    // Reset animation
+                    textElement.className = 'demo-text';
+                    // Force reflow
+                    void textElement.offsetWidth;
+                    textElement.className = `demo-text ${animation}`;
+                });
+            });
+            
+            resetButton.addEventListener('click', resetAnimations);
+            applyButton.addEventListener('click', applyCustomText);
+            
+            // Initial setup
+            applyCustomText();
+        });
+    </script>
+</body>
+</html>
