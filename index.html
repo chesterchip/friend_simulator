@@ -213,6 +213,36 @@
                     </select>
                 </div>
             </div>
+            
+            <!-- Distortions Layer (NEW) -->
+            <div class="layer-item">
+                <div class="layer-header">
+                    <div class="layer-title">
+                        <button class="visibility-toggle" id="distortion-visibility-toggle" title="Toggle visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <span class="layer-name">Distortions</span>
+                    </div>
+                    <span class="layer-opacity-value" id="distortion-intensity-value">50%</span>
+                </div>
+                <div class="layer-options horizontal">
+                    <div class="layer-slider">
+                        <input type="range" id="distortion-intensity" class="slider" min="0" max="100" value="50">
+                    </div>
+                    <select id="distortion-effect" class="dropdown">
+                        <option value="none">None</option>
+                        <option value="filmGrain">Film Grain</option>
+                        <option value="noise">Noise</option>
+                        <option value="scanlines">Scanlines</option>
+                        <option value="glitch">Glitch</option>
+                        <option value="blur">Blur</option>
+                        <option value="warp">Warp</option>
+                        <option value="pixelate">Pixelate</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
     

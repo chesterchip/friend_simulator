@@ -46,6 +46,13 @@ let gradientBlendMode = defaultValues.gradientBlendMode;
 let backgroundOpacity = defaultValues.backgroundOpacity;
 let backgroundBlendMode = defaultValues.backgroundBlendMode;
 
+// Distortion settings
+let distortionLayerVisible = true;
+let distortionEffect = defaultValues.distortionEffect;
+let distortionIntensity = defaultValues.distortionIntensity;
+let distortionAnimationFrame = null;
+let distortionOffset = 0;
+
 // Layer visibility settings
 let textLayerVisible = true;
 let gradientLayerVisible = true;
@@ -147,6 +154,11 @@ function updateDisplay() {
         ctx.fillRect(0, 0, width, height);
     }
     
+    // Apply distortion effects if visible
+    if (distortionLayerVisible && distortionEffect !== 'none') {
+        applyDistortionEffect(ctx, width, height);
+    }
+    
     // Reset opacity for future drawing operations
     ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = "source-over";
@@ -178,6 +190,285 @@ function updateDisplay() {
         cancelAnimationFrame(animationFrame);
     }
     animationFrame = requestAnimationFrame(updateDisplay);
+}
+
+/**
+ * Apply selected distortion effect to the canvas
+ * @param {CanvasRenderingContext2D} ctx - Canvas context
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyDistortionEffect(ctx, width, height) {
+    // Get the current canvas image data
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    
+    // Apply different effects based on selection
+    switch (distortionEffect) {
+        case 'filmGrain':
+            applyFilmGrain(data, width, height);
+            break;
+        case 'noise':
+            applyNoise(data, width, height);
+            break;
+        case 'scanlines':
+            applyScanlines(data, width, height);
+            break;
+        case 'glitch':
+            applyGlitch(ctx, data, width, height);
+            break;
+        case 'blur':
+            applyBlur(data, width, height);
+            break;
+        case 'warp':
+            applyWarp(data, width, height);
+            break;
+        case 'pixelate':
+            applyPixelate(ctx, width, height);
+            return; // Pixelate applies directly to canvas, no need to put image data back
+    }
+    
+    // Put the modified image data back on the canvas
+    ctx.putImageData(imageData, 0, 0);
+}
+
+/**
+ * Apply film grain effect
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyFilmGrain(data, width, height) {
+    const intensity = distortionIntensity / 100 * 50; // Scale to reasonable value
+    
+    for (let i = 0; i < data.length; i += 4) {
+        // Generate random noise value between -intensity and +intensity
+        const noise = (Math.random() - 0.5) * intensity * 2;
+        
+        // Apply to RGB channels
+        data[i] = Math.min(255, Math.max(0, data[i] + noise));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+        // Don't modify alpha channel
+    }
+}
+
+/**
+ * Apply noise effect (colored noise)
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyNoise(data, width, height) {
+    const intensity = distortionIntensity / 100 * 70; // Scale to reasonable value
+    
+    for (let i = 0; i < data.length; i += 4) {
+        // Generate random noise values for each channel
+        const noiseR = (Math.random() - 0.5) * intensity * 2;
+        const noiseG = (Math.random() - 0.5) * intensity * 2;
+        const noiseB = (Math.random() - 0.5) * intensity * 2;
+        
+        // Apply to RGB channels
+        data[i] = Math.min(255, Math.max(0, data[i] + noiseR));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noiseG));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noiseB));
+    }
+}
+
+/**
+ * Apply scanlines effect
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyScanlines(data, width, height) {
+    const intensity = distortionIntensity / 100 * 0.7; // Scale to reasonable value
+    const scanlineWidth = 2; // Width of each scanline
+    
+    for (let y = 0; y < height; y++) {
+        // Determine if this row is a scanline
+        if (y % (scanlineWidth * 2) < scanlineWidth) {
+            for (let x = 0; x < width; x++) {
+                const i = (y * width + x) * 4;
+                // Darken pixels in scanline rows
+                data[i] = data[i] * (1 - intensity);
+                data[i + 1] = data[i + 1] * (1 - intensity);
+                data[i + 2] = data[i + 2] * (1 - intensity);
+            }
+        }
+    }
+}
+
+/**
+ * Apply glitch effect
+ * @param {CanvasRenderingContext2D} ctx - Canvas context
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyGlitch(ctx, data, width, height) {
+    const intensity = distortionIntensity / 100;
+    
+    // Number of glitch slices depends on intensity
+    const numSlices = Math.floor(intensity * 20) + 1;
+    
+    // Occasionally add color channel shift
+    if (Math.random() < intensity * 0.8) {
+        const channelShift = Math.floor(intensity * 10) + 1;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            // Shift red channel left or right
+            const sourceI = i + (Math.random() > 0.5 ? channelShift * 4 : -channelShift * 4);
+            if (sourceI >= 0 && sourceI < data.length) {
+                data[i] = data[sourceI];
+            }
+        }
+    }
+    
+    // Create horizontal glitch slices
+    for (let i = 0; i < numSlices; i++) {
+        const y = Math.floor(Math.random() * height);
+        const sliceHeight = Math.floor(Math.random() * 20) + 5;
+        const shiftX = Math.floor((Math.random() - 0.5) * width * intensity * 0.5);
+        
+        // Only create slices sometimes, based on intensity
+        if (Math.random() < intensity) {
+            // Get slice image data
+            const sliceData = ctx.getImageData(0, y, width, sliceHeight);
+            
+            // Clear the slice area
+            ctx.clearRect(0, y, width, sliceHeight);
+            
+            // Draw the slice data shifted
+            ctx.putImageData(sliceData, shiftX, y);
+        }
+    }
+}
+
+/**
+ * Apply blur effect
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyBlur(data, width, height) {
+    // Box blur implementation - simplified for performance
+    const intensity = Math.floor(distortionIntensity / 100 * 10) + 1;
+    const kernel = intensity;
+    const tempData = new Uint8ClampedArray(data.length);
+    
+    // Copy original data
+    for (let i = 0; i < data.length; i++) {
+        tempData[i] = data[i];
+    }
+    
+    // Approximated box blur by sampling nearby pixels
+    for (let y = kernel; y < height - kernel; y++) {
+        for (let x = kernel; x < width - kernel; x++) {
+            const idx = (y * width + x) * 4;
+            
+            let r = 0, g = 0, b = 0, a = 0, count = 0;
+            
+            // Sample a window of pixels
+            for (let ky = -kernel; ky <= kernel; ky += kernel) {
+                for (let kx = -kernel; kx <= kernel; kx += kernel) {
+                    const sampleIdx = ((y + ky) * width + (x + kx)) * 4;
+                    r += tempData[sampleIdx];
+                    g += tempData[sampleIdx + 1];
+                    b += tempData[sampleIdx + 2];
+                    a += tempData[sampleIdx + 3];
+                    count++;
+                }
+            }
+            
+            // Set pixel to average value
+            data[idx] = r / count;
+            data[idx + 1] = g / count;
+            data[idx + 2] = b / count;
+            data[idx + 3] = a / count;
+        }
+    }
+}
+
+/**
+ * Apply warp effect (wavy distortion)
+ * @param {Uint8ClampedArray} data - Image data array
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyWarp(data, width, height) {
+    const intensity = distortionIntensity / 100 * 20;
+    const tempData = new Uint8ClampedArray(data.length);
+    
+    // Copy original data
+    for (let i = 0; i < data.length; i++) {
+        tempData[i] = data[i];
+    }
+    
+    // Get time-based animation value
+    const time = Date.now() / 1000;
+    
+    // Apply wave distortion
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            // Calculate wave distortion
+            const distortX = Math.sin(y * 0.05 + time * 2) * intensity;
+            const distortY = Math.cos(x * 0.05 + time * 2) * intensity;
+            
+            // Get source coordinates
+            const sourceX = Math.floor(x + distortX);
+            const sourceY = Math.floor(y + distortY);
+            
+            // Check if source is within bounds
+            if (sourceX >= 0 && sourceX < width && sourceY >= 0 && sourceY < height) {
+                const destIdx = (y * width + x) * 4;
+                const sourceIdx = (sourceY * width + sourceX) * 4;
+                
+                // Copy source pixel to destination
+                data[destIdx] = tempData[sourceIdx];
+                data[destIdx + 1] = tempData[sourceIdx + 1];
+                data[destIdx + 2] = tempData[sourceIdx + 2];
+                data[destIdx + 3] = tempData[sourceIdx + 3];
+            }
+        }
+    }
+}
+
+/**
+ * Apply pixelate effect
+ * @param {CanvasRenderingContext2D} ctx - Canvas context
+ * @param {number} width - Canvas width
+ * @param {number} height - Canvas height
+ */
+function applyPixelate(ctx, width, height) {
+    // Calculate pixel size based on intensity
+    const pixelSize = Math.max(2, Math.floor(distortionIntensity / 100 * 20));
+    
+    // Get current canvas content
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(displayCanvas, 0, 0);
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+    
+    // Draw pixelated version
+    for (let y = 0; y < height; y += pixelSize) {
+        for (let x = 0; x < width; x += pixelSize) {
+            // Limit dimensions to prevent going out of bounds
+            const pixelWidth = Math.min(pixelSize, width - x);
+            const pixelHeight = Math.min(pixelSize, height - y);
+            
+            // Get the color of the first pixel in this block
+            const pixelData = tempCtx.getImageData(x, y, 1, 1).data;
+            
+            // Draw a rectangle with that color
+            ctx.fillStyle = `rgba(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]}, ${pixelData[3] / 255})`;
+            ctx.fillRect(x, y, pixelWidth, pixelHeight);
+        }
+    }
 }
 
 /**
@@ -282,7 +573,7 @@ function updateTextAnimation() {
 
 /**
  * Update layer visibility
- * @param {string} layer - Layer name (text, gradient, background)
+ * @param {string} layer - Layer name (text, gradient, background, distortion)
  * @param {boolean} visible - Visibility state
  */
 function updateLayerVisibility(layer, visible) {
@@ -296,6 +587,9 @@ function updateLayerVisibility(layer, visible) {
             break;
         case 'background':
             backgroundLayerVisible = visible;
+            break;
+        case 'distortion':
+            distortionLayerVisible = visible;
             break;
     }
     
@@ -465,7 +759,31 @@ function updateSliderValue(name, value) {
         case 'backgroundBlendMode':
             backgroundBlendMode = value;
             break;
+        case 'distortionEffect':
+            distortionEffect = value;
+            break;
+        case 'distortionIntensity':
+            distortionIntensity = value;
+            break;
     }
+}
+
+/**
+ * Update distortion effect
+ * @param {string} effect - Selected distortion effect
+ */
+function updateDistortionEffect(effect) {
+    distortionEffect = effect;
+    updateDisplay();
+}
+
+/**
+ * Update distortion intensity
+ * @param {number} intensity - Distortion intensity value
+ */
+function updateDistortionIntensity(intensity) {
+    distortionIntensity = intensity;
+    updateDisplay();
 }
 
 // Export functions to global scope for accessibility across modules
@@ -478,3 +796,5 @@ window.updateSliderValue = updateSliderValue;
 window.updateAnimationIntensity = updateAnimationIntensity;
 window.updateAnimationDuration = updateAnimationDuration;
 window.updateLayerVisibility = updateLayerVisibility;
+window.updateDistortionEffect = updateDistortionEffect;
+window.updateDistortionIntensity = updateDistortionIntensity;

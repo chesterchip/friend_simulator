@@ -63,5 +63,9 @@ const defaultValues = {
     gradientOpacity: 100, // Gradient layer opacity (0-100)
     gradientBlendMode: "normal", // Gradient layer blend mode
     backgroundOpacity: 100, // Background layer opacity (0-100)
-    backgroundBlendMode: "normal" // Background layer blend mode
+    backgroundBlendMode: "normal", // Background layer blend mode
+    
+    // Distortion settings
+    distortionEffect: "none", // Default to no distortion
+    distortionIntensity: 50  // Middle intensity by default
 };

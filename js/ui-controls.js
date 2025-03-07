@@ -17,6 +17,7 @@ const fontStyleDropdown = document.getElementById('font-style');
 const textVisibilityToggle = document.getElementById('text-visibility-toggle');
 const gradientVisibilityToggle = document.getElementById('gradient-visibility-toggle');
 const backgroundVisibilityToggle = document.getElementById('background-visibility-toggle');
+const distortionVisibilityToggle = document.getElementById('distortion-visibility-toggle');
 
 // Slider elements
 const animationSpeedSlider = document.getElementById('animation-speed');
@@ -42,6 +43,11 @@ const gradientBlendModeDropdown = document.getElementById('gradient-blend-mode')
 const backgroundOpacitySlider = document.getElementById('background-opacity');
 const backgroundOpacityValue = document.getElementById('background-opacity-value');
 const backgroundBlendModeDropdown = document.getElementById('background-blend-mode');
+
+// Distortion DOM elements
+const distortionIntensitySlider = document.getElementById('distortion-intensity');
+const distortionIntensityValue = document.getElementById('distortion-intensity-value');
+const distortionEffectDropdown = document.getElementById('distortion-effect');
 
 // Slider value displays
 const animationSpeedValue = document.getElementById('animation-speed-value');
@@ -273,6 +279,7 @@ function initLayerVisibilityToggles() {
     window.updateLayerVisibility('text', true);
     window.updateLayerVisibility('gradient', true);
     window.updateLayerVisibility('background', true);
+    window.updateLayerVisibility('distortion', true);
     
     // Text layer visibility toggle
     textVisibilityToggle.addEventListener('click', () => {
@@ -293,6 +300,13 @@ function initLayerVisibilityToggles() {
         const isVisible = !backgroundVisibilityToggle.classList.contains('hidden');
         backgroundVisibilityToggle.classList.toggle('hidden');
         window.updateLayerVisibility('background', !isVisible);
+    });
+    
+    // Distortion layer visibility toggle
+    distortionVisibilityToggle.addEventListener('click', () => {
+        const isVisible = !distortionVisibilityToggle.classList.contains('hidden');
+        distortionVisibilityToggle.classList.toggle('hidden');
+        window.updateLayerVisibility('distortion', !isVisible);
     });
 }
 
@@ -442,6 +456,19 @@ function initSliders() {
     backgroundBlendModeDropdown.addEventListener('change', function() {
         const value = this.value;
         window.updateSliderValue('backgroundBlendMode', value);
+    });
+    
+    // Distortion intensity slider
+    distortionIntensitySlider.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        distortionIntensityValue.textContent = value + '%';
+        window.updateSliderValue('distortionIntensity', value);
+    });
+
+    // Distortion effect dropdown
+    distortionEffectDropdown.addEventListener('change', function() {
+        const value = this.value;
+        window.updateSliderValue('distortionEffect', value);
     });
 }
 

@@ -63,7 +63,12 @@ function saveConfiguration() {
             // Layer visibility
             textLayerVisible: textLayerVisible,
             gradientLayerVisible: gradientLayerVisible,
-            backgroundLayerVisible: backgroundLayerVisible
+            backgroundLayerVisible: backgroundLayerVisible,
+            
+            // Distortion settings
+            distortionEffect: distortionEffect,
+            distortionIntensity: distortionIntensity,
+            distortionLayerVisible: distortionLayerVisible
         };
         
         // Convert to JSON string
@@ -201,6 +206,11 @@ function applyConfiguration(config) {
     if ('gradientLayerVisible' in config) window.updateLayerVisibility('gradient', config.gradientLayerVisible);
     if ('backgroundLayerVisible' in config) window.updateLayerVisibility('background', config.backgroundLayerVisible);
     
+    // Apply distortion settings
+    if ('distortionEffect' in config) window.updateSliderValue('distortionEffect', config.distortionEffect);
+    if ('distortionIntensity' in config) window.updateSliderValue('distortionIntensity', config.distortionIntensity);
+    if ('distortionLayerVisible' in config) window.updateLayerVisibility('distortion', config.distortionLayerVisible);
+    
     // Update UI to reflect new settings
     updateUIFromConfig(config);
 }
@@ -299,6 +309,16 @@ function updateUIFromConfig(config) {
         document.getElementById('background-blend-mode').value = config.backgroundBlendMode;
     }
     
+    // Update distortion settings
+    if ('distortionIntensity' in config) {
+        document.getElementById('distortion-intensity').value = config.distortionIntensity;
+        document.getElementById('distortion-intensity-value').textContent = config.distortionIntensity + '%';
+    }
+    
+    if ('distortionEffect' in config) {
+        document.getElementById('distortion-effect').value = config.distortionEffect;
+    }
+    
     // Update layer visibility toggles
     if ('textLayerVisible' in config) {
         const textToggle = document.getElementById('text-visibility-toggle');
@@ -318,6 +338,13 @@ function updateUIFromConfig(config) {
         const backgroundToggle = document.getElementById('background-visibility-toggle');
         if (backgroundToggle) {
             backgroundToggle.classList.toggle('hidden', !config.backgroundLayerVisible);
+        }
+    }
+    
+    if ('distortionLayerVisible' in config) {
+        const distortionToggle = document.getElementById('distortion-visibility-toggle');
+        if (distortionToggle) {
+            distortionToggle.classList.toggle('hidden', !config.distortionLayerVisible);
         }
     }
     
