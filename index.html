@@ -1,247 +1,249 @@
-<!DOCTYPE html>
+        <!-- Add the config feedback near the buttons but hidden by default -->
+        <div id="config-feedback" class="config-feedback" style="position: fixed; top: 55px; right: 15px; background-color: #232323; padding: 8px 12px; border-radius: 4px; border: 1px solid #444; display: none; z-index: 1000;"></div><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emotion Visualization v1.008</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Override grid template to make sidebars wider */
-        body {
-            grid-template-columns: 410px 1fr 560px; /* Increased right panel by 150px */
-        }
-        
-        /* Font handling */
-        .rounded-font {
-            font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro", "Helvetica Neue", Arial, sans-serif !important;
-            font-feature-settings: "kern" 1;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .standard-font {
-            font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif !important;
-            font-feature-settings: "kern" 1;
-            -webkit-font-smoothing: antialiased;
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="css/navigator.css">
+</head>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Emotion Input <span class="version">v1.008</span></h2>
-        
-        <!-- Configurations Panel (Moved to top) -->
-        <h3>Configurations</h3>
-        <div class="config-controls">
-            <div class="config-buttons">
-                <button id="save-config-btn" class="config-button">Save Configuration</button>
-                <button id="load-config-btn" class="config-button">Load Configuration</button>
+    <!-- New Navigator Section -->
+    <div class="navigator">
+        <div class="left-section">
+            <span class="nav-title">Emotion Visualization v4.030</span>
+            <div class="nav-controls">
+                <button id="history-back-btn" class="nav-button" title="Undo" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <button id="history-forward-btn" class="nav-button" title="Redo" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
+                    </svg>
+                </button>
             </div>
-            <div id="config-feedback" class="config-feedback"></div>
+        </div>
+        <div class="config-buttons">
+            <button id="save-config-btn" class="config-button">Save</button>
+            <button id="load-config-btn" class="config-button">Load</button>
             <input type="file" id="config-file-input" accept=".json" style="display: none;">
         </div>
-        
-        <div class="emotion-input-container">
-            <textarea id="emotion-input" class="emotion-input" placeholder="Enter your emotions here..." rows="5"></textarea>
-            <button class="clear-button" id="clear-btn">×</button>
+    </div>
+    <div class="sidebar">
+        <div class="panel-header">
+            <span class="toggle-icon">▼</span>
+            <h2>Emotion Input <span class="version">v1.008</span></h2>
         </div>
-        <button id="analyze-btn" class="analyze-button">Analyze</button>
-        
-        <h3>Quick Emotions</h3>
-        <div class="quick-emotions" id="quick-emotions">
-            <!-- Quick emotion buttons will be added here -->
-        </div>
-        
-        <h3>Detected Emotions</h3>
-        <div id="detected-emotions">
-            <!-- Emotion bars will go here -->
-        </div>
-        
-        <h3>Background Controls</h3>
-        <div class="background-controls-grid">
-            <!-- Left Column -->
-            <div class="background-controls-column">
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Animation Speed</span>
-                        <span class="slider-value" id="animation-speed-value">50</span>
-                    </div>
-                    <input type="range" id="animation-speed" class="slider" min="0" max="100" value="50">
+        <div class="panel-content">
+            <!-- Input Container -->
+            <div class="emotion-input-container">
+                <div class="input-row">
+                    <textarea id="emotion-input" class="emotion-input" placeholder="Enter your emotions here..." rows="4"></textarea>
+                    <button id="analyze-btn" class="analyze-button">Analyze</button>
                 </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Gradient Size</span>
-                        <span class="slider-value" id="gradient-max-size-value">50</span>
-                    </div>
-                    <input type="range" id="gradient-max-size" class="slider" min="0" max="100" value="50">
+                <button class="clear-button" id="clear-btn">×</button>
+            </div>
+            
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Quick Emotions</h3>
+            </div>
+            <div class="panel-content">
+                <div class="quick-emotions" id="quick-emotions">
+                    <!-- Quick emotion buttons will be added here via JavaScript -->
                 </div>
             </div>
             
-            <!-- Right Column -->
-            <div class="background-controls-column">
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Gradient Inner Size</span>
-                        <span class="slider-value" id="gradient-min-size-value">0</span>
-                    </div>
-                    <input type="range" id="gradient-min-size" class="slider" min="0" max="100" value="0">
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Gradient Feather Size</span>
-                        <span class="slider-value" id="gradient-feather-size-value">0</span>
-                    </div>
-                    <input type="range" id="gradient-feather-size" class="slider" min="0" max="100" value="0">
-                </div>
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Detected Emotions</h3>
             </div>
-        </div>
-        
-        <!-- Updated Layers Panel with Visibility Toggle and Horizontal Layout -->
-        <h3>Layers</h3>
-        <div class="layer-controls">
-            <!-- Text Layer -->
-            <div class="layer-item">
-                <div class="layer-header">
-                    <div class="layer-title">
-                        <button class="visibility-toggle" id="text-visibility-toggle" title="Toggle visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                        <span class="layer-name">Text</span>
-                    </div>
-                    <span class="layer-opacity-value" id="text-opacity-value">100%</span>
-                </div>
-                <div class="layer-options horizontal">
-                    <div class="layer-slider">
-                        <input type="range" id="text-opacity" class="slider" min="0" max="100" value="100">
-                    </div>
-                    <select id="text-blend-mode" class="dropdown">
-                        <option value="normal">Normal</option>
-                        <option value="multiply">Multiply</option>
-                        <option value="screen">Screen</option>
-                        <option value="overlay">Overlay</option>
-                        <option value="darken">Darken</option>
-                        <option value="lighten">Lighten</option>
-                        <option value="color-dodge">Color Dodge</option>
-                        <option value="color-burn">Color Burn</option>
-                        <option value="hard-light">Hard Light</option>
-                        <option value="soft-light">Soft Light</option>
-                        <option value="difference">Difference</option>
-                        <option value="exclusion">Exclusion</option>
-                        <option value="hue">Hue</option>
-                        <option value="saturation">Saturation</option>
-                        <option value="color">Color</option>
-                        <option value="luminosity">Luminosity</option>
-                    </select>
+            <div class="panel-content">
+                <div id="detected-emotions">
+                    <!-- Emotion visualization will be added dynamically -->
                 </div>
             </div>
             
-            <!-- Gradient Layer -->
-            <div class="layer-item">
-                <div class="layer-header">
-                    <div class="layer-title">
-                        <button class="visibility-toggle" id="gradient-visibility-toggle" title="Toggle visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                        <span class="layer-name">Gradient</span>
+            <!-- Split Gradient Controls -->
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Gradient Animation</h3>
+            </div>
+            <div class="panel-content">
+                <div id="gradient-animation-controls" class="control-section"></div>
+            </div>
+
+            <!-- Rename from "Advanced Gradient" to just "Gradient" -->
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Gradient</h3>
+            </div>
+            <div class="panel-content">
+                <div id="advanced-gradient-controls" class="advanced-controls-section">
+                    <div class="gradient-type-selector">
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Gradient Type</span>
+                            </div>
+                            <select id="gradient-type" class="dropdown">
+                                <option value="linear">Linear</option>
+                                <option value="radial">Radial</option>
+                                <option value="dual-radial" selected>Dual Radial</option>
+                            </select>
+                        </div>
                     </div>
-                    <span class="layer-opacity-value" id="gradient-opacity-value">100%</span>
-                </div>
-                <div class="layer-options horizontal">
-                    <div class="layer-slider">
-                        <input type="range" id="gradient-opacity" class="slider" min="0" max="100" value="100">
+                    
+                    <div class="gradient-points-container">
+                        <!-- Primary Gradient Point -->
+                        <div class="gradient-point-controls">
+                            <h4>Primary Point</h4>
+                            <div class="point-position-controls">
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Position X</span>
+                                        <span class="slider-value" id="gradient-point1-x-value">50</span>
+                                    </div>
+                                    <input type="range" id="gradient-point1-x" class="slider" min="0" max="100" value="50">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Position Y</span>
+                                        <span class="slider-value" id="gradient-point1-y-value">30</span>
+                                    </div>
+                                    <input type="range" id="gradient-point1-y" class="slider" min="0" max="100" value="30">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Size</span>
+                                        <span class="slider-value" id="gradient-point1-size-value">50</span>
+                                    </div>
+                                    <input type="range" id="gradient-point1-size" class="slider" min="0" max="50" value="50">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Secondary Gradient Point -->
+                        <div class="gradient-point-controls" id="secondary-point-controls">
+                            <h4>Secondary Point</h4>
+                            <div class="point-position-controls">
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Position X</span>
+                                        <span class="slider-value" id="gradient-point2-x-value">50</span>
+                                    </div>
+                                    <input type="range" id="gradient-point2-x" class="slider" min="0" max="100" value="50">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Position Y</span>
+                                        <span class="slider-value" id="gradient-point2-y-value">70</span>
+                                    </div>
+                                    <input type="range" id="gradient-point2-y" class="slider" min="0" max="100" value="70">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Size</span>
+                                        <span class="slider-value" id="gradient-point2-size-value">50</span>
+                                    </div>
+                                    <input type="range" id="gradient-point2-size" class="slider" min="0" max="50" value="50">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <select id="gradient-blend-mode" class="dropdown">
-                        <option value="normal">Normal</option>
-                        <option value="multiply">Multiply</option>
-                        <option value="screen">Screen</option>
-                        <option value="overlay">Overlay</option>
-                        <option value="darken">Darken</option>
-                        <option value="lighten">Lighten</option>
-                        <option value="color-dodge">Color Dodge</option>
-                        <option value="color-burn">Color Burn</option>
-                        <option value="hard-light">Hard Light</option>
-                        <option value="soft-light">Soft Light</option>
-                        <option value="difference">Difference</option>
-                        <option value="exclusion">Exclusion</option>
-                        <option value="hue">Hue</option>
-                        <option value="saturation">Saturation</option>
-                        <option value="color">Color</option>
-                        <option value="luminosity">Luminosity</option>
-                    </select>
+                    
+                    <!-- Effect Controls -->
+                    <div class="gradient-effects-container">
+                        <h4>Effects</h4>
+                        <div class="effects-controls">
+                            <div class="slider-container">
+                                <div class="slider-header">
+                                    <span class="slider-label">Glow Intensity</span>
+                                    <span class="slider-value" id="gradient-glow-value">0</span>
+                                </div>
+                                <input type="range" id="gradient-glow" class="slider" min="0" max="100" value="0">
+                            </div>
+                            <div class="slider-container">
+                                <div class="slider-header">
+                                    <span class="slider-label">Bloom Size</span>
+                                    <span class="slider-value" id="gradient-bloom-value">55</span>
+                                </div>
+                                <input type="range" id="gradient-bloom" class="slider" min="0" max="100" value="55">
+                            </div>
+                            <div class="slider-container">
+                                <div class="slider-header">
+                                    <span class="slider-label">Color Blend</span>
+                                    <span class="slider-value" id="gradient-blend-value">49</span>
+                                </div>
+                                <input type="range" id="gradient-blend" class="slider" min="0" max="100" value="49">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Revised Color Selection - Vertical layout with updated labels -->
+                    <div class="gradient-colors-container">
+                        <h4>Colors</h4>
+                        <div class="color-selection-vertical">
+                            <!-- Primary Color -->
+                            <div class="color-row">
+                                <span class="color-label">Primary</span>
+                                <div class="color-controls">
+                                    <select id="gradient-color1-source" class="color-source-dropdown">
+                                        <option value="custom">Custom</option>
+                                        <option value="primary" selected>Emotion 1</option>
+                                        <option value="secondary">Emotion 2</option>
+                                    </select>
+                                    <div class="color-box gradient-color" id="gradient-color1" style="background-color: #59a3ff;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Secondary Color -->
+                            <div class="color-row">
+                                <span class="color-label">Secondary</span>
+                                <div class="color-controls">
+                                    <select id="gradient-color2-source" class="color-source-dropdown">
+                                        <option value="custom">Custom</option>
+                                        <option value="primary">Emotion 1</option>
+                                        <option value="secondary" selected>Emotion 2</option>
+                                    </select>
+                                    <div class="color-box gradient-color" id="gradient-color2" style="background-color: #ff3b3b;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Background Color -->
+                            <div class="color-row">
+                                <span class="color-label">Background</span>
+                                <div class="color-controls">
+                                    <select id="gradient-color-bg-source" class="color-source-dropdown">
+                                        <option value="custom">Custom</option>
+                                        <option value="primary" selected>Emotion 1</option>
+                                        <option value="secondary">Emotion 2</option>
+                                    </select>
+                                    <div class="color-box gradient-color" id="gradient-color-bg" style="background-color: #59a3ff;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Background Layer -->
-            <div class="layer-item">
-                <div class="layer-header">
-                    <div class="layer-title">
-                        <button class="visibility-toggle" id="background-visibility-toggle" title="Toggle visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                        <span class="layer-name">Background</span>
-                    </div>
-                    <span class="layer-opacity-value" id="background-opacity-value">100%</span>
-                </div>
-                <div class="layer-options horizontal">
-                    <div class="layer-slider">
-                        <input type="range" id="background-opacity" class="slider" min="0" max="100" value="100">
-                    </div>
-                    <select id="background-blend-mode" class="dropdown">
-                        <option value="normal">Normal</option>
-                        <option value="multiply">Multiply</option>
-                        <option value="screen">Screen</option>
-                        <option value="overlay">Overlay</option>
-                        <option value="darken">Darken</option>
-                        <option value="lighten">Lighten</option>
-                        <option value="color-dodge">Color Dodge</option>
-                        <option value="color-burn">Color Burn</option>
-                        <option value="hard-light">Hard Light</option>
-                        <option value="soft-light">Soft Light</option>
-                        <option value="difference">Difference</option>
-                        <option value="exclusion">Exclusion</option>
-                        <option value="hue">Hue</option>
-                        <option value="saturation">Saturation</option>
-                        <option value="color">Color</option>
-                        <option value="luminosity">Luminosity</option>
-                    </select>
-                </div>
+
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Text Controls</h3>
             </div>
-            
-            <!-- Distortions Layer (NEW) -->
-            <div class="layer-item">
-                <div class="layer-header">
-                    <div class="layer-title">
-                        <button class="visibility-toggle" id="distortion-visibility-toggle" title="Toggle visibility">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                            </svg>
-                        </button>
-                        <span class="layer-name">Distortions</span>
-                    </div>
-                    <span class="layer-opacity-value" id="distortion-intensity-value">50%</span>
-                </div>
-                <div class="layer-options horizontal">
-                    <div class="layer-slider">
-                        <input type="range" id="distortion-intensity" class="slider" min="0" max="100" value="50">
-                    </div>
-                    <select id="distortion-effect" class="dropdown">
-                        <option value="none">None</option>
-                        <option value="filmGrain">Film Grain</option>
-                        <option value="noise">Noise</option>
-                        <option value="scanlines">Scanlines</option>
-                        <option value="glitch">Glitch</option>
-                        <option value="blur">Blur</option>
-                        <option value="warp">Warp</option>
-                        <option value="pixelate">Pixelate</option>
-                    </select>
-                </div>
+            <div class="panel-content">
+                <div id="text-controls" class="text-controls-grid"></div>
+            </div>
+
+            <div class="panel-header">
+                <span class="toggle-icon">▼</span>
+                <h3>Transition Controls</h3>
+            </div>
+            <div class="panel-content">
+                <div id="transition-controls" class="transition-controls-grid"></div>
             </div>
         </div>
     </div>
@@ -254,136 +256,82 @@
     </div>
     
     <div class="color-config">
-        <h2>Emotion Colors <a href="animation-demo.html" class="view-animations-link">View Animations</a></h2>
-        
-        <table class="color-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>BG</th>
-                    <th>Text</th>
-                    <th>Text Animation</th>
-                    <th>Animation Settings</th>
-                </tr>
-            </thead>
-            <tbody id="color-table-body">
-                <!-- Emotion color controls will be added here -->
-            </tbody>
-        </table>
-        
-        <!-- Updated Text Controls in Two Columns with Font Style Dropdown -->
-        <h3>Text Controls</h3>
-        <div class="text-controls-grid">
-            <!-- Left Column -->
-            <div class="text-controls-column">
-                <!-- Font Family Dropdown with more fonts -->
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Font Family</span>
-                    </div>
-                    <select id="font-family" class="dropdown">
-                        <option value="SF Pro">SF Pro</option>
-                        <option value="SF Pro Rounded">SF Pro Rounded</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Open Sans">Open Sans</option>
-                        <option value="Montserrat">Montserrat</option>
-                        <option value="Lato">Lato</option>
-                        <option value="Poppins">Poppins</option>
-                        <option value="Inter">Inter</option>
-                        <option value="Georgia">Georgia</option>
-                        <option value="Times New Roman">Times New Roman</option>
-                        <option value="Merriweather">Merriweather</option>
-                        <option value="Playfair Display">Playfair Display</option>
-                        <option value="Garamond">Garamond</option>
-                        <option value="Baskerville">Baskerville</option>
-                        <option value="Proxima Nova">Proxima Nova</option>
-                        <option value="Futura">Futura</option>
-                        <option value="Gill Sans">Gill Sans</option>
-                        <option value="Verdana">Verdana</option>
-                    </select>
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Font Size</span>
-                        <span class="slider-value" id="font-size-value">50</span>
-                    </div>
-                    <input type="range" id="font-size" class="slider" min="0" max="100" value="50">
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Font Kerning</span>
-                        <span class="slider-value" id="font-kerning-value">50</span>
-                    </div>
-                    <input type="range" id="font-kerning" class="slider" min="0" max="100" value="50">
-                </div>
-            </div>
-            
-            <!-- Right Column -->
-            <div class="text-controls-column">
-                <!-- Font Style Dropdown -->
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Font Style</span>
-                    </div>
-                    <select id="font-style" class="dropdown">
-                        <option value="normal">Normal</option>
-                        <option value="bold">Bold</option>
-                        <option value="italic">Italic</option>
-                        <option value="underline">Underline</option>
-                        <option value="bold-italic">Bold Italic</option>
-                    </select>
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Font Weight</span>
-                        <span class="slider-value" id="font-weight-value">50</span>
-                    </div>
-                    <input type="range" id="font-weight" class="slider" min="0" max="100" value="50">
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">Line Height</span>
-                        <span class="slider-value" id="line-height-value">50</span>
-                    </div>
-                    <input type="range" id="line-height" class="slider" min="0" max="100" value="50">
-                </div>
-            </div>
+        <div class="panel-header" id="colors-panel-header">
+            <span class="toggle-icon">▼</span>
+            <h2>Emotion Colors</h2>
         </div>
-        
-        <h3>Transition Controls</h3>
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Text Typing Speed</span>
-                <span class="slider-value" id="transition-speed-value">50</span>
-            </div>
-            <input type="range" id="transition-speed" class="slider" min="0" max="50" value="50">
+        <div class="panel-content" id="colors-panel-content">
+            <table class="color-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>BG</th>
+                        <th>Text</th>
+                        <th>Text Animation</th>
+                        <th>Animation Settings</th>
+                    </tr>
+                </thead>
+                <tbody id="color-table-body">
+                    <!-- Emotion color controls will be added via JavaScript -->
+                </tbody>
+            </table>
         </div>
-        
-        <div class="slider-container">
-            <div class="slider-header">
-                <span class="slider-label">Background Transition Speed</span>
-                <span class="slider-value" id="bg-transition-speed-value">500ms</span>
+
+        <!-- Layers Panel -->
+        <div class="panel-header" id="layers-panel-header">
+            <span class="toggle-icon">▼</span>
+            <h2>Layers</h2>
+        </div>
+        <div class="panel-content" id="layers-panel-content">
+            <div id="layer-controls" class="layer-controls">
+                <!-- Layer items will be dynamically generated -->
             </div>
-            <input type="range" id="bg-transition-speed" class="slider" min="500" max="2000" step="50" value="500">
         </div>
     </div>
     
     <div id="color-picker-container"></div>
 
-    <!-- JavaScript Files -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/color-picker.js"></script>
-    <script src="js/emotion-analyzer.js"></script>
-    <script src="js/visualization.js"></script>
-    <script src="js/ui-controls.js"></script>
-    <script src="js/config-manager.js"></script>
+    <!-- JavaScript files - include separately for now -->
+    <!-- JavaScript files - Utilities -->
+    <script src="js/components/color-palette-component.js"></script>
+    <script src="js/utils/color-utils.js"></script>
+    <script src="js/utils/dom-utils.js"></script>
+    <script src="js/utils/color-picker.js"></script>
+        
+    <!-- Configuration -->
+    <script src="js/config/config.js"></script>
+    <script src="js/config/config-manager.js"></script>
+        
+    <!-- Emotion analysis -->
+    <script src="js/analyzer/emotion-analyzer.js"></script>
+        
+    <!-- UI modules -->
+    <script src="js/ui/slider-controls.js"></script>
+    <script src="js/ui/color-controls.js"></script>
+    <script src="js/ui/layer-controls.js"></script>
+    <script src="js/ui/emotion-ui.js"></script>
+    <script src="js/ui/ui-generator.js"></script>
+    <script src="js/ui/ui-manager.js"></script>
+        
+    <!-- Visualization modules -->
+    <script src="js/visualization/distortion-effects.js"></script>
+    <script src="js/visualization/text-effects.js"></script>
+    <script src="js/visualization/canvas-renderer.js"></script>
+    <script src="js/visualization/visualization-manager.js"></script>
+        
+    <!-- Spider Diagram component -->
+    <script src="js/components/canvas-spider-diagram.js"></script>
+    <script src="js/components/spider-mount.js"></script>
+        
+    <!-- Main app -->
     <script src="js/app.js"></script>
+    
+    <!-- Navigator functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // No additional JavaScript needed for the navigator buttons
+            // as they now use the standard IDs that the original code already listens for
+        });
+    </script>
 </body>
 </html>
